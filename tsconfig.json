@@ -10,6 +10,7 @@
     "emitDeclarationOnly": false,
     "noEmit": false,
     "outDir": "dist",
+    "rootDir": "src",
     "allowImportingTsExtensions": false
   }
 }
