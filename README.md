@@ -16,12 +16,14 @@ npm install @lascyb/monaco-editor-vue3 monaco-editor
 
 ### 1. 配置 Worker 环境（推荐）
 
-在使用编辑器组件之前，建议先配置 Worker 环境以启用完整功能：
+在使用编辑器组件之前，建议先配置 Worker 环境以启用语法高亮、代码补全、错误检查等完整功能：
 
 ```ts
-// main.js 或 main.js
+// main.ts 或 main.ts
 import '@lascyb/monaco-editor-vue3/extensions/environment'
 ```
+
+> ⚠️ 提示：`extensions/environment.js` 默认不会被打包到 npm 产物中，部分构建环境下 `import '@lascyb/monaco-editor-vue3/extensions/environment'` 可能无法直接解析。可将仓库中的 `extensions/environment.js` 拷贝到自己的项目中，再按需修改并通过相对路径导入，例如 `import '@/monaco/environment'`。
 
 ### 2. 使用组件
 
@@ -45,7 +47,7 @@ import '@lascyb/monaco-editor-vue3/extensions/environment'
 ## 完整示例
 
 ```ts 
-//main.js
+//main.ts
 import '@lascyb/monaco-editor-vue3/extensions/environment' //Worker 环境配置
 import '@lascyb/monaco-editor-vue3/extensions/i18n' // 导入语言包扩展（默认中文简体）
 import '@lascyb/monaco-editor-vue3/extensions/keybinding' // 导入快捷键扩展
@@ -96,9 +98,11 @@ Worker 环境配置用于启用语法高亮、代码补全、错误检查等语�
 **使用方式：**
 
 ```ts
-// main.js 或 main.js
+// main.ts 或 main.ts
 import '@lascyb/monaco-editor-vue3/extensions/environment'
 ```
+
+> ⚠️ 提示：若直接导入该文件出现 “Cannot find module” 等错误，请复制 `extensions/environment.js` 到你的应用仓库，并以本地路径引入；这样也更方便按需调整 Worker 分配策略。
 
 导入后会自动配置 Worker 环境，无需额外操作。如果已经存在 `MonacoEnvironment`，则不会覆盖现有配置。
 
@@ -121,14 +125,14 @@ import '@lascyb/monaco-editor-vue3/extensions/environment'
 **使用方式：**
 
 ```ts
-// main.js
+// main.ts
 import '@lascyb/monaco-editor-vue3/extensions/i18n' // 导入语言包扩展（默认中文简体）
 ```
 
 或者直接导入 Monaco Editor 的语言包：
 
 ```ts
-// main.js
+// main.ts
 import 'monaco-editor/esm/nls.messages.zh-cn.js' // 导入中文语言包
 ```
 
@@ -159,7 +163,7 @@ import "monaco-editor/esm/nls.messages.zh-cn.js"
 直接导入扩展文件即可自动配置快捷键：
 
 ```ts
-// main.js
+// main.ts
 import '@lascyb/monaco-editor-vue3/extensions/keybinding' // 导入快捷键扩展
 ```
 

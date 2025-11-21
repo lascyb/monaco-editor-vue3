@@ -5,15 +5,15 @@ import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 
 /**
- * 配置 Monaco Editor 的 Worker 环境
+ * configureMonacoEnvironment 配置 Monaco Editor 的 Worker 环境
  * 直接导入此文件即可自动配置，用于启用语法高亮、代码补全等语言服务功能
- * 
+ *
  * @example
  * ```ts
  * // 在应用入口文件中导入
  * import '@lascyb/monaco-editor-vue3/extensions/environment'
  * ```
- * 
+ *
  * 注意：如果已经存在 MonacoEnvironment，则不会覆盖现有配置
  */
 if (typeof self !== 'undefined' && !self.MonacoEnvironment) {
