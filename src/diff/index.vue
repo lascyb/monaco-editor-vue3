@@ -5,7 +5,6 @@ import type {editor} from 'monaco-editor'
 import * as monaco from 'monaco-editor'
 import type {Props} from "./types";
 
-console.log(monaco.languages.getLanguages())
 const modifiedValue = defineModel({
   type: String,
   required: true,
@@ -26,7 +25,7 @@ const container = useTemplateRef("container")
 const instance = shallowRef<editor.IStandaloneDiffEditor>()
 
 /**
- * onMounted
+ * onMounted 生命周期钩子
  * 创建 Diff 编辑器并同步原始/修改模型
  */
 onMounted(() => {
@@ -52,65 +51,49 @@ onMounted(() => {
   })
 })
 /**
- * onUnmounted
+ * onUnmounted 生命周期钩子
  * 销毁 Diff 编辑器实例，释放关联模型
  */
 onUnmounted(() => {
   instance.value?.dispose();
 });
 /**
- * watch props.options
+ * watch props.options 监听器
  * 监听运行期配置变动并同步到 Diff 编辑器
  */
 watch(() => props.options, (newValue) => {
-  console.log("watch.props.options", newValue)
   if (instance.value) {
     instance.value.updateOptions(newValue)
   }
 })
-// watch(modifiedValue , (newValue) => {
-//   if (instance.value){
-//     instance.value?.getModel()?.modified?.setValue(newValue)
-//   }
-// })
-// watch(originalValue, (newValue) => {
-//   if (instance.value){
-//     instance.value?.getModel()?.original?.setValue(newValue)
-//   }
-// })
 
 /**
- * watch props.language
+ * watch props.language 监听器
  * 同步 original/modified 模型的语言定义
  */
 watch(() => props.language, (newLanguage) => {
-  console.log(newLanguage)
   if (instance.value) {
-    let model = instance.value.getModel()
-    if (model) {
+    const model = instance.value.getModel()
+    if (model && newLanguage) {
       monaco.editor.setModelLanguage(model.modified, newLanguage)
       monaco.editor.setModelLanguage(model.original, newLanguage)
     }
   }
 })
+
 /**
- * watch props.theme
+ * watch props.theme 监听器
  * 直接通过 monaco.editor.setTheme 切换全局主题
  */
-watch(() => props.theme, (newValue) => {
-  console.log(newValue)
-  if (instance.value) {
-    monaco.editor.setTheme(newValue)
-    // let model = instance.value.getModel()
-    // if (model) {
-    //   // monaco.editor.setTheme(model.modified, newValue)
-    //   monaco.editor.setTheme(model.original, newValue)
-    // }
+watch(() => props.theme, (newTheme) => {
+  if (newTheme) {
+    monaco.editor.setTheme(newTheme)
   }
 })
+
 /**
- * defineExpose
- * 暴露 getInstance 供父组件精细控制 Diff 编辑器
+ * defineExpose 暴露方法
+ * 暴露 getInstance 供父组件精细控制 Diff 编辑器实例
  */
 defineExpose({
   getInstance: () => instance.value,
@@ -118,8 +101,12 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="container"></div>
+  <div ref="container" class="container"></div>
 </template>
 
 <style scoped>
+.container {
+  height: 100%;
+  width: 100%;
+}
 </style>

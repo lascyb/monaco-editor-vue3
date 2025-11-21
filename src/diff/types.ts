@@ -2,18 +2,21 @@ import type {editor} from "monaco-editor";
 
 /**
  * DiffInitOptions
- * 仅在 createDiffEditor 阶段读取的初始化配置
+ * 差异编辑器初始化选项类型，仅在 createDiffEditor 阶段读取的初始化配置
+ * 例如布局、原始/修改面板比例等一次性参数
  */
 export type DiffInitOptions = Omit<editor.IStandaloneDiffEditorConstructionOptions, keyof DiffRuntimeOptions>
 
 /**
  * DiffRuntimeOptions
- * 支持运行期更新的差异对比选项集合
+ * 差异编辑器运行时选项类型，支持运行期更新的差异对比选项集合
+ * 通过 watch 监听并调用 updateOptions 实时生效
  */
 export type DiffRuntimeOptions = editor.IDiffEditorOptions
 
 /**
  * Props
+ * MonacoDiffEditor 组件的属性接口
  * 描述 Diff 模式编辑器的初始化及交互配置场景
  */
 export interface Props {
@@ -32,7 +35,7 @@ export interface Props {
     /**
      * language
      * 控制 original/modified 双模型的语言模式
-     * @default 'javascript'
+     * @default undefined
      */
     language?: string
 
@@ -42,6 +45,5 @@ export interface Props {
      * @default 'vs-dark'
      */
     theme?: string
-
 }
 
