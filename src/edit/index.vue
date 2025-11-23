@@ -30,6 +30,7 @@ onMounted(() => {
     ...props.options,
     ...(props.theme) && {theme: props.theme}
   }))
+  instance.value.setModel(monaco.editor.createModel(modelValue.value as string, props.language))
   instance.value.onKeyUp(() => {
     const value = instance.value?.getValue()
     if (value !== undefined) {
