@@ -28,16 +28,18 @@ onMounted(() => {
   instance.value = markRaw(monaco.editor.create(container.value as HTMLElement, {
     ...props.initOptions,
     ...props.options,
-    ...(props.theme) && {theme: props.theme}
+    ...(props.theme) && {theme: props.theme},
+    ...(props.language) && {language: props.language},
+    value: modelValue.value
   }))
-  instance.value.setModel(monaco.editor.createModel(modelValue.value as string, props.language))
+  // instance.value.setModel(monaco.editor.createModel(modelValue.value, props.language))
   instance.value.onKeyUp(() => {
     const value = instance.value?.getValue()
     if (value !== undefined) {
       modelValue.value = value
     }
   })
-})
+});
 /**
  * onUnmounted 生命周期钩子
  * 卸载阶段释放编辑器实例避免内存泄漏
@@ -91,12 +93,8 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="container" class="container"></div>
+  <div ref="container" style="height: 100px"></div>
 </template>
 
 <style scoped>
-.container {
-  height: 100%;
-  width: 100%;
-}
 </style>

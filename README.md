@@ -36,7 +36,7 @@ import '@lascyb/monaco-editor-vue3/extensions/environment'
 </script>
 
 <template>
-  <MonacoEditor v-model="code" language="json"/>
+  <MonacoEditor v-model="code" language="json" style="height: 100px"/>
 </template>
 ```
 
@@ -70,7 +70,8 @@ const modified = ref('const hello = "new"')
   <div>
     <h3>单栏编辑器</h3>
     <MonacoEditor 
-      v-model="code" 
+        style="height: 100px"
+      v-model="code"
       language="typescript"
       theme="vs-dark"
       :options="{ minimap: { enabled: true } }"
@@ -78,6 +79,7 @@ const modified = ref('const hello = "new"')
     
     <h3>差异编辑器</h3>
     <MonacoDiffEditor 
+      style="height: 100px"
       v-model="modified"
       v-model:original="original"
       language="typescript"

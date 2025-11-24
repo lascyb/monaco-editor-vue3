@@ -30,11 +30,12 @@ const instance = shallowRef<editor.IStandaloneDiffEditor>()
  */
 onMounted(() => {
   instance.value = markRaw(monaco.editor.createDiffEditor(container.value as HTMLElement, {
+    automaticLayout: true,
     ...props.initOptions,
     ...props.options,
-  }))
+  }));
   instance.value.setModel({
-    modified: monaco.editor.createModel(modifiedValue.value as string, props.language),
+    modified: monaco.editor.createModel(modifiedValue.value, props.language),
     original: monaco.editor.createModel(originalValue.value, props.language),
   })
   instance.value.getModifiedEditor().onKeyUp(() => {
@@ -101,12 +102,8 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="container" class="container"></div>
+  <div ref="container" style="height: 100px;"></div>
 </template>
 
 <style scoped>
-.container {
-  height: 100%;
-  width: 100%;
-}
 </style>

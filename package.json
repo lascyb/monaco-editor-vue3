@@ -1,6 +1,6 @@
 {
   "name": "@lascyb/monaco-editor-vue3",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -25,8 +25,8 @@
     "build": "vite build"
   },
   "peerDependencies": {
-    "monaco-editor": "^0.54.0",
-    "vue": "^3.3.4"
+    "monaco-editor": ">=0.54.0 <1.0.0",
+    "vue": ">=3.3.4 <4.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",
