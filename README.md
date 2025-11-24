@@ -4,6 +4,14 @@ Monaco Editor 的 Vue 3 组件封装，提供单栏编辑器 `MonacoEditor` 和�
 
 支持语法高亮、代码补全、错误检查等 Monaco Editor 的所有功能，并提供灵活的扩展配置。
 
+## 功能特性
+
+- 🧩 **双组件模式**：`MonacoEditor`、`MonacoDiffEditor` 覆盖常规编辑和差异对比场景
+- 🔁 **双向绑定**：原生支持 `v-model` / `v-model:original`，并对 `options`、`theme`、`language` 做响应式处理
+- ⚙️ **扩展友好**：内置 Worker、i18n、快捷键等扩展文件，可直接导入或按需拷贝定制
+- 🧠 **类型完备**：以 TypeScript 开发，暴露完整的 Monaco 类型定义
+- 🚀 **MonacoEnvironment 帮助**：提供 `extensions/environment.ts` 作为 Worker 配置模板，可配合 `window.__MONACO_WORKER_IMPORTER__`、`window.__MONACO_WORKER_BASE_URL__` 等钩子扩展
+
 ## 安装
 
 ```bash
@@ -16,14 +24,21 @@ npm install @lascyb/monaco-editor-vue3 monaco-editor
 
 ### 1. 配置 Worker 环境（推荐）
 
-在使用编辑器组件之前，建议先配置 Worker 环境以启用语法高亮、代码补全、错误检查等完整功能：
+在使用编辑器组件之前，务必配置 Worker 才能获得语法高亮、补全、诊断等完整能力：
 
 ```ts
-// main.ts 或 main.ts
+// 1. Vite / 支持 ?worker 的构建工具
 import '@lascyb/monaco-editor-vue3/extensions/environment'
+
+// 2. 非 Vite 环境（Webpack、Rspack、自建脚手架等）
+// 复制 extensions/environment-custom.ts 到你的项目，并改为相对路径导入
+// import '@/monaco/environment-custom'
 ```
 
-> ⚠️ 提示：`extensions/environment.js` 默认不会被打包到 npm 产物中，部分构建环境下 `import '@lascyb/monaco-editor-vue3/extensions/environment'` 可能无法直接解析。可将仓库中的 `extensions/environment.js` 拷贝到自己的项目中，再按需修改并通过相对路径导入，例如 `import '@/monaco/environment'`。
+> ⚠️ 提示：`extensions/environment.ts` 默认不会被打包到 npm 产物中，部分构建环境下 `import '@lascyb/monaco-editor-vue3/extensions/environment'` 可能无法直接解析。可以将对应文件拷贝到业务仓库（例如 `src/monaco/environment.ts`），再按需修改后导入。
+>
+> - 需要自定义 Worker 加载流程时，可在运行期提供 `window.__MONACO_WORKER_IMPORTER__ = (label) => import('xxx?worker')`
+> - 需要自定义静态资源前缀时，可设置 `window.__MONACO_WORKER_BASE_URL__ = '/static/monaco'`
 
 ### 2. 使用组件
 
@@ -93,20 +108,32 @@ const modified = ref('const hello = "new"')
 
 项目中提供了扩展文件，位于 `extensions/` 目录下，你可以直接导入使用或参考这些扩展来配置 Monaco Editor。
 
-### Worker 环境配置
+1. ### Worker 环境配置
 
-Worker 环境配置用于启用语法高亮、代码补全、错误检查等语言服务功能。该扩展使用 Vite 的 `?worker` 语法来加载 Worker 文件，因此**仅适用于 Vite 构建工具**。
+Worker 环境配置用于启用语法高亮、代码补全、错误检查等语言服务功能。根据构建工具不同，可选择下表中的方案：
+
+| 场景 | 推荐文件 | 说明 |
+| --- | --- | --- |
+| Vite / 支持 `?worker` | `extensions/environment.ts` | 直接导入即可，依赖构建器自动处理 `?worker` |
+| Webpack、Rspack、自建脚手架 | `extensions/environment-custom.ts` | 直接 `import` worker，并返回 `new Worker('xxx.js', {type: 'module'})`，无需 `?worker` |
+| 复杂或自定义需求 | 自行复制两份示例 | 可结合 `window.__MONACO_WORKER_IMPORTER__`、`__MONACO_WORKER_BASE_URL__` 等钩子扩展 |
 
 **使用方式：**
 
 ```ts
 // main.ts 或 main.ts
 import '@lascyb/monaco-editor-vue3/extensions/environment'
+
+// 非 Vite 示例：复制 environment-custom.ts 并改为相对路径导入
+// import '@/monaco/environment-custom'
 ```
 
-> ⚠️ 提示：若直接导入该文件出现 “Cannot find module” 等错误，请复制 `extensions/environment.js` 到你的应用仓库，并以本地路径引入；这样也更方便按需调整 Worker 分配策略。
+> ⚠️ 提示：若直接导入该文件出现 “Cannot find module” 等错误，请复制 `extensions/environment.ts` 到你的应用仓库，并以本地路径引入；这样也更方便按需调整 Worker 分配策略。
 
-导入后会自动配置 Worker 环境，无需额外操作。如果已经存在 `MonacoEnvironment`，则不会覆盖现有配置。
+导入后会自动配置 Worker 环境，无需额外操作。如果已经存在 `MonacoEnvironment`，则不会覆盖现有配置。你也可以通过以下两个钩子覆盖默认行为：
+
+- `window.__MONACO_WORKER_IMPORTER__`：自定义基于 `label` 的导入函数，适合自行控制 `import('xxx?worker')`
+- `window.__MONACO_WORKER_BASE_URL__`：指定 Worker 静态资源基础路径，适合 CDN/非 Vite 场景
 
 **说明：**
 - 必须在创建编辑器实例之前导入
@@ -117,10 +144,10 @@ import '@lascyb/monaco-editor-vue3/extensions/environment'
   - HTML/Handlebars/Razor
   - TypeScript/JavaScript
   - 其他语言使用默认的 editorWorker
-- 如需自定义配置，可复制 `extensions/environment.js` 到项目中修改
+- 如需自定义配置，可复制 `extensions/environment.ts` 到项目中修改
 - **注意**：此扩展依赖 Vite 的 Worker 导入语法，非 Vite 项目需要自行实现 Worker 配置
 
-### 语言包配置
+2. ### 语言包配置
 
 该扩展默认启用中文简体界面。
 
@@ -160,7 +187,7 @@ import "monaco-editor/esm/nls.messages.zh-cn.js"
 // import "monaco-editor/esm/nls.messages.tr.js" // 土耳其语
 ```
 
-### 自定义键盘快捷键
+3. ### 自定义键盘快捷键
 
 直接导入扩展文件即可自动配置快捷键：
 
@@ -188,6 +215,18 @@ monaco.editor.addKeybindingRules([
 ## 直接引用源码
 
 可 clone 仓库并把 `src/` 当作组件模块使用：
+
+## 常见问题
+
+1. **为什么引入 `environment.ts` 报 “Cannot find module”？**  
+   该文件未随 npm 包发布，请拷贝到业务仓库后通过相对路径导入，或配置 `resolve.alias`。
+
+2. **我的构建工具不支持 `?worker`，如何处理？**  
+   - 复制 `extensions/environment.ts` 并结合构建工具的 worker loader 实现 `MonacoEnvironment`
+   - 或在运行期提供 `window.__MONACO_WORKER_IMPORTER__` 来接管 worker 的 import 逻辑
+
+3. **如何自定义 Monaco 快捷键 / 语言包？**  
+   参照 `extensions/keybinding.js`、`extensions/i18n.js` 直接修改或在项目内复制后引入即可。
 
 1. `git clone https://github.com/lascyb/monaco-editor-vue3.git`
 2. 复制出 `src` 文件夹，直接作为组件引入进行使用
