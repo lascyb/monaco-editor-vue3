@@ -20,6 +20,14 @@ const props = withDefaults(defineProps<Props>(), {
 const container = useTemplateRef("container")
 const instance = shallowRef<editor.IStandaloneCodeEditor>()
 
+const updateModel = () => {
+  if (instance.value){
+    const value = instance.value?.getValue()
+    if (value !== undefined) {
+      modelValue.value = value
+    }
+  }
+}
 /**
  * onMounted 生命周期钩子
  * 创建单实例编辑器并绑定输入联动
@@ -32,13 +40,7 @@ onMounted(() => {
     ...(props.language) && {language: props.language},
     value: modelValue.value
   }))
-  // instance.value.setModel(monaco.editor.createModel(modelValue.value, props.language))
-  instance.value.onKeyUp(() => {
-    const value = instance.value?.getValue()
-    if (value !== undefined) {
-      modelValue.value = value
-    }
-  })
+  instance.value.onDidChangeModelContent(() => updateModel())
 });
 /**
  * onUnmounted 生命周期钩子

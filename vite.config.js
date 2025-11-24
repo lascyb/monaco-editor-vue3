@@ -5,6 +5,8 @@ import {fileURLToPath} from 'node:url'
 import {resolve} from 'node:path'
 
 const packageDir = fileURLToPath(new URL('.', import.meta.url))
+const srcDir = resolve(packageDir, 'src')
+const extensionsDir = resolve(packageDir, 'extensions')
 
 export default defineConfig({
   plugins: [
@@ -20,10 +22,16 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: resolve(packageDir, 'src/index.ts'),
-      name: 'ConfigCenterMonacoEditor',
+      entry: {
+        index:resolve(srcDir, 'index.ts'),
+        // "extensions/environment": resolve(extensionsDir, 'environment.ts')
+      },
+      name: 'MonacoEditorVue3',
       formats: ['es', 'cjs'],
-      fileName: (format) => format === 'es' ? 'index.js' : 'index.cjs'
+      fileName: (format, entryName) => {
+        const ext = format === 'es' ? 'js' : 'cjs'
+        return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`
+      }
     },
     rollupOptions: {
       external: ['vue', 'monaco-editor'],

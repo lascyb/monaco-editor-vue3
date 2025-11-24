@@ -24,6 +24,23 @@ const props = withDefaults(defineProps<Props>(), {
 const container = useTemplateRef("container")
 const instance = shallowRef<editor.IStandaloneDiffEditor>()
 
+const updateModified = () => {
+  if (instance.value){
+    let value = instance.value?.getModel()?.modified.getValue()
+    if (value) {
+      modifiedValue.value = value
+    }
+  }
+}
+const updateOriginal = () => {
+  if (instance.value) {
+    let value = instance.value?.getModel()?.original.getValue()
+    if (value) {
+      originalValue.value = value
+    }
+  }
+}
+
 /**
  * onMounted 生命周期钩子
  * 创建 Diff 编辑器并同步原始/修改模型
@@ -38,18 +55,8 @@ onMounted(() => {
     modified: monaco.editor.createModel(modifiedValue.value, props.language),
     original: monaco.editor.createModel(originalValue.value, props.language),
   })
-  instance.value.getModifiedEditor().onKeyUp(() => {
-    let value = instance.value?.getModel()?.modified.getValue()
-    if (value) {
-      modifiedValue.value = value
-    }
-  })
-  instance.value.getOriginalEditor().onKeyUp(() => {
-    let value = instance.value?.getModel()?.original.getValue()
-    if (value) {
-      originalValue.value = value
-    }
-  })
+  instance.value.getModifiedEditor().onDidChangeModelContent(() => updateModified())
+  instance.value.getOriginalEditor().onDidChangeModelContent(() => updateOriginal())
 })
 /**
  * onUnmounted 生命周期钩子
