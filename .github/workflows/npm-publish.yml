@@ -6,8 +6,11 @@ name: Node.js Package Publish
 on:
   release:
     types: [created]
+  push:
+    tags:
+      - 'v*'  # 在推送版本标签时触发
 permissions:
-  id-token: write
+  id-token: write  # 启用 OIDC 令牌
   contents: read
 jobs:
   build-publish:
@@ -18,5 +21,18 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish --access public
+          
+      - name: 更新 npm 到最新版本
+        run: npm install -g npm@latest
+        
+      - name: 安装依赖
+        run: npm ci
+        
+      - name: 构建
+        run: npm run build
+        
+      - name: 运行测试（如果存在）
+        run: npm run test --if-present
+        
+      - name: 发布到 npm
+        run: npm publish
