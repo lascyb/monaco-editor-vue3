@@ -6,9 +6,6 @@ name: Node.js Package Publish
 on:
   release:
     types: [created]
-  push:
-    tags:
-      - 'v*'  # 在推送版本标签时触发
 permissions:
   id-token: write  # 启用 OIDC 令牌
   contents: read
